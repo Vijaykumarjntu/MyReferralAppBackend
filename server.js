@@ -20,7 +20,7 @@ const referralSchema = Joi.object({
 
 
 app.post('/api/referrals', async (req, res) => {
-   console.log("route working successfully");
+   
     try {
     const value = await referralSchema.validateAsync(req.body);
 
