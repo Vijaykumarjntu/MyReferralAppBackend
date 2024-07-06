@@ -18,31 +18,6 @@ const referralSchema = Joi.object({
   refereePhone: Joi.string().pattern(new RegExp('^[0-9]{10}$')).required(),
 });
 
-async function sendMail(oAuth2Client, referral) {
-    const accessToken = await oAuth2Client.getAccessToken();
-  
-    const transport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: 'mvjk443@gmail.com',
-        clientId: oAuth2Client._clientId,
-        clientSecret: oAuth2Client._clientSecret,
-        refreshToken: oAuth2Client.credentials.refresh_token,
-        accessToken: accessToken.token,
-      },
-    });
-  
-    const mailOptions = {
-      from: 'mvjk443@gmail.com',
-      to: referral.refereeEmail,
-      subject: 'Referral Notification',
-      text: `You have been referred by ${referral.referrerName}.`,
-      html: `<p>You have been referred by ${referral.referrerName}.</p>`,
-    };
-  
-    await transport.sendMail(mailOptions);
-}
 
 app.post('/api/referrals', async (req, res) => {
    console.log("route working successfully");
@@ -52,8 +27,6 @@ app.post('/api/referrals', async (req, res) => {
     const referral = await prisma.referral.create({
       data: value,
     });
-    const oAuth2Client = await authorize();
-    await sendMail(oAuth2Client, referral);
     res.json(referral);
   } catch (error) {
     if (error.isJoi) {
